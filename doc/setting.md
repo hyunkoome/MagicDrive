@@ -1,16 +1,15 @@
 ```shell
-conda create -n magicdrive python==3.10.15 -y
-conda activate magicdrive
+conda create -n mdrive39 python==3.9 -y
+conda activate mdrive39
 ```
-pip install -r requirements/py10cu12_1/requirements.txt 
+pip install -r requirements/py39cu12_1/requirements.txt
 git lfs install
 git clone https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5
 
 cd third_party/diffusers
 pip install .
 
-cd third_party/
-git clone https://github.com/mit-han-lab/bevfusion && cd bevfusion
+cd third_party/bevfusion_last 
 
 Now, you should be able to run our demo.
 
@@ -37,20 +36,6 @@ if (torch.cuda.is_available() and torch.version.cuda is not None) or os.getenv("
 
 python setup.py develop
 
-
-
-```shell
-pip uninstall torch torchvision tensorboard hydra-core urllib3 h5py einops accelerate transformers mmcv-full openmim Pillow nuscenes-devkit numba llvmlite numpy  llvmlite mmdet opencv-python ninja diffusers
-```
-
-==========================
-
-conda create -n magicdrive37 python==3.7 -y
-=======================================================================
-
-conda create -n mdrive39 python==3.9 -y
-
-data
 ```shell
 ln -s ~/DATA/NAS/nfsRoot/Train_Results/img2img-turbo/local_cashe/ local_cashe
 
