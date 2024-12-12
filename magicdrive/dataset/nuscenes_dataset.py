@@ -8,6 +8,10 @@ from mmdet.datasets import DATASETS
 from mmdet3d.core.bbox import LiDARInstance3DBoxes
 from mmdet3d.datasets.nuscenes_dataset import NuScenesDataset
 
+#hkkim
+import os
+import mmcv
+
 
 @DATASETS.register_module()
 class NuScenesDatasetM(NuScenesDataset):
@@ -82,6 +86,22 @@ class NuScenesDatasetM(NuScenesDataset):
             use_valid_flag=use_valid_flag,
         )
 
+    def load_annotations(self, ann_file): # hkkim add
+        """Load annotations from ann_file.
+
+        Args:
+            ann_file (str): Path of the annotation file.
+
+        Returns:
+            list[dict]: List of annotations sorted by timestamps.
+        """
+        data = mmcv.load(os.path.join('/home/hyunkoo/DATA/ssd8tb/Journal/MagicDrive', ann_file))
+        data_infos = list(sorted(data["infos"], key=lambda e: e["timestamp"]))
+        data_infos = data_infos[:: self.load_interval]
+        self.metadata = data["metadata"]
+        self.version = self.metadata["version"]
+        return data_infos
+
     def get_cat_ids(self, idx):
         """Get category distribution of single scene.
 
@@ -109,6 +129,10 @@ class NuScenesDatasetM(NuScenesDataset):
     def get_data_info(self, index: int) -> Dict[str, Any]:
         info = self.data_infos[index]
 
+        # hkkim: lidar_path 수정
+        # print('-----------# lidar_path 수정 가능 -----------')
+        info["lidar_path"] = os.path.abspath(
+            os.path.join('/home/hyunkoo/DATA/ssd8tb/Journal/MagicDrive/data', info["lidar_path"]))
         data = dict(
             token=info["token"],
             sample_idx=info['token'],
@@ -150,6 +174,8 @@ class NuScenesDatasetM(NuScenesDataset):
             data["camera2lidar"] = []
 
             for _, camera_info in info["cams"].items():
+                # hkkim: print('-----------# data_path 수정 가능 -----------')
+                camera_info["data_path"] = os.path.abspath(os.path.join('/home/hyunkoo/DATA/ssd8tb/Journal/MagicDrive/data', camera_info["data_path"]))
                 data["image_paths"].append(camera_info["data_path"])
 
                 # lidar to camera transform

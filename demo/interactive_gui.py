@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+load_dotenv('/home/hyunkoo/DATA/ssd8tb/Journal/MagicDrive/.env')
+print(os.environ['HF_HOME'])
 import sys
 import glob
 import torch
@@ -21,8 +24,7 @@ from demo.helper import preprocess_fn, draw_box_on_imgs, precompute_cam_ext
 
 def load_model_from(
         dir, weight_dtype=torch.float16, device="cuda", with_xformers=None):
-    original_overrides = OmegaConf.load(
-        os.path.join(dir, "hydra/overrides.yaml"))
+    original_overrides = OmegaConf.load(os.path.join(dir, "hydra/overrides.yaml"))
     with initialize(version_base=None, config_path="../configs"):
         cfg = compose(config_name="test_config", overrides=original_overrides)
     pipe_param = {}

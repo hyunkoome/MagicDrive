@@ -1,4 +1,8 @@
 import os
+from dotenv import load_dotenv
+load_dotenv('/home/hyunkoo/DATA/ssd8tb/Journal/MagicDrive/.env')
+print(os.environ['HF_HOME'])
+
 import sys
 import logging
 import hydra
