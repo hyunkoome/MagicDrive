@@ -75,6 +75,7 @@ class LoadBEVSegmentationM:
 
         self.maps = {}
         for location in LOCATIONS:
+            dataset_root = os.path.join('/home/hyunkoo/DATA/ssd8tb/Journal/MagicDrive', dataset_root) # hkkim
             self.maps[location] = NuScenesMap(dataset_root, location)
         if cache_file and os.path.isfile(cache_file):
             logging.info(f"using data cache from: {cache_file}")

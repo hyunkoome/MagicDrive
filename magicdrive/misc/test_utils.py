@@ -154,12 +154,9 @@ def prepare_all(cfg, device='cuda', need_loader=True):
     if cfg.runner.validation_index == "demo":
         val_dataset = FolderSetWrapper("demo/data")
     else:
-        val_dataset = build_dataset(
-            OmegaConf.to_container(cfg.dataset.data.val, resolve=True)
-        )
+        val_dataset = build_dataset(OmegaConf.to_container(cfg.dataset.data.val, resolve=True))
         if cfg.runner.validation_index != "all":
-            val_dataset = ListSetWrapper(
-                val_dataset, cfg.runner.validation_index)
+            val_dataset = ListSetWrapper(val_dataset, cfg.runner.validation_index)
 
     #### dataloader ####
     collate_fn_param = {
@@ -171,6 +168,13 @@ def prepare_all(cfg, device='cuda', need_loader=True):
         "bbox_add_ratio": cfg.runner.bbox_add_ratio,
         "bbox_add_num": cfg.runner.bbox_add_num,
     }
+    # val_dataloader = torch.utils.data.DataLoader(
+    #     val_dataset,
+    #     shuffle=False,
+    #     batch_size=cfg.runner.validation_batch_size,
+    #     num_workers=cfg.runner.num_workers,
+    # )
+
     val_dataloader = torch.utils.data.DataLoader(
         val_dataset,
         shuffle=False,

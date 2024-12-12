@@ -93,7 +93,7 @@ accelerate config
 Our default log directory is `${ROOT}/magicdrive-log`. Please be prepared.
 
 ### Pretrained Weights
-
+   
 Our training is based on [stable-diffusion-v1-5](https://huggingface.co/runwayml/stable-diffusion-v1-5). We assume you put them at `${ROOT}/pretrained/` as follows:
 
 ```bash
@@ -154,6 +154,8 @@ We prepare the nuScenes dataset similar to [bevfusion's instructions](https://gi
     ```bash
     python tools/create_data.py nuscenes --root-path ./data/nuscenes \
       --out-dir ./data/nuscenes_mmdet3d_2 --extra-tag nuscenes
+   
+   python tools/create_data.py nuscenes --root-path ./data/nuscenes --out-dir ./data/nuscenes_mmdet3d_3 --extra-tag nuscenes
     ```
     You should have these files:
     ```bash

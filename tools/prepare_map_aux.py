@@ -81,6 +81,8 @@ def main(cfg: DictConfig):
     cfg.dataset.train_pipeline[-1]["keys"].append("gt_masks_bev_static")
     cfg.dataset.train_pipeline[-1].meta_lis_keys.append("token")
     cfg.dataset.train_pipeline[7].safe = False  # ReorderMultiViewImagesM
+
+    # hkkim
     cfg.dataset.test_pipeline[-1]["keys"].append("gt_masks_bev_static")
     cfg.dataset.test_pipeline[-1].meta_lis_keys.append("token")
     cfg.dataset.test_pipeline[6].safe = False  # ReorderMultiViewImagesM
@@ -89,7 +91,7 @@ def main(cfg: DictConfig):
     with open_dict(cfg):
         cfg.dataset.data.train.filter_empty_gt = False
         cfg.dataset.data.val.filter_empty_gt = False
-        cfg.dataset.data.test.filter_empty_gt = False
+        cfg.dataset.data.test.filter_empty_gt = False # hkkim
 
     if "process" not in cfg:
         print("Please specify data split to process: +process=train or val")

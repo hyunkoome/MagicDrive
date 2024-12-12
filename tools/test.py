@@ -7,6 +7,7 @@ import logging
 from omegaconf import OmegaConf
 from omegaconf import DictConfig
 from tqdm import tqdm
+from utils import make_dir
 
 import torch
 
@@ -33,8 +34,7 @@ def output_func(x): return concat_6_views(x)
 # def output_func(x): return img_concat_h(*x[:3])
 
 
-@hydra.main(version_base=None, config_path="../configs",
-            config_name="test_config")
+@hydra.main(version_base=None, config_path="../configs", config_name="test_config")
 def main(cfg: DictConfig):
     if cfg.debug:
         import debugpy
@@ -44,8 +44,7 @@ def main(cfg: DictConfig):
         print('Attached, continue...')
 
     output_dir = to_absolute_path(cfg.resume_from_checkpoint)
-    original_overrides = OmegaConf.load(
-        os.path.join(output_dir, "hydra/overrides.yaml"))
+    original_overrides = OmegaConf.load(os.path.join(output_dir, "hydra/overrides.yaml"))
     current_overrides = HydraConfig.get().overrides.task
 
     # getting the config name of this job.
@@ -72,29 +71,43 @@ def main(cfg: DictConfig):
                                       map_size=target_map_size)
 
         for map_img, ori_imgs, ori_imgs_wb, gen_imgs_list, gen_imgs_wb_list in zip(*return_tuples):
+
+            map_save_dir = os.path.join(cfg.log_root, f"{total_num}_map")
+            make_dir(map_save_dir)
+
+            original_img_save_dir = os.path.join(cfg.log_root, f"{total_num}_map", "original", "Img")
+            make_dir(original_img_save_dir)
+            original_gt_save_dir = os.path.join(cfg.log_root, f"{total_num}_map", "original", "GT")
+            make_dir(original_gt_save_dir)
+
+            gen_save_img_dir = os.path.join(cfg.log_root, f"{total_num}_map", "generation", "Img")
+            make_dir(gen_save_img_dir)
+
+            gen_save_gt_dir = os.path.join(cfg.log_root, f"{total_num}_map", "generation", "GT")
+            make_dir(gen_save_gt_dir)
+
             # save map
-            map_img.save(os.path.join(cfg.log_root, f"{total_num}_map.png"))
+            map_img.save(os.path.join(map_save_dir, f"{total_num}_map.png"))
 
             # save ori
             if ori_imgs is not None:
                 ori_img = output_func(ori_imgs)
-                ori_img.save(os.path.join(cfg.log_root, f"{total_num}_ori.png"))
+                ori_img.save(os.path.join(original_img_save_dir, f"{total_num}_ori.png"))
+
             # save gen
             for ti, gen_imgs in enumerate(gen_imgs_list):
                 gen_img = output_func(gen_imgs)
-                gen_img.save(os.path.join(
-                    cfg.log_root, f"{total_num}_gen{ti}.png"))
+                gen_img.save(os.path.join(gen_save_img_dir, f"{total_num}_gen{ti}.png"))
             if cfg.show_box:
                 # save ori with box
                 if ori_imgs_wb is not None:
                     ori_img_with_box = output_func(ori_imgs_wb)
-                    ori_img_with_box.save(os.path.join(
-                        cfg.log_root, f"{total_num}_ori_box.png"))
+                    ori_img_with_box.save(os.path.join(original_gt_save_dir, f"{total_num}_ori_box.png"))
+
                 # save gen with box
                 for ti, gen_imgs_wb in enumerate(gen_imgs_wb_list):
                     gen_img_with_box = output_func(gen_imgs_wb)
-                    gen_img_with_box.save(os.path.join(
-                        cfg.log_root, f"{total_num}_gen{ti}_box.png"))
+                    gen_img_with_box.save(os.path.join(gen_save_gt_dir, f"{total_num}_gen{ti}_box.png"))
 
             total_num += 1
 
