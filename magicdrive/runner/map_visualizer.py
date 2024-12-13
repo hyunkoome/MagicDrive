@@ -11,6 +11,9 @@ import numpy as np
 import torch
 
 
+import cv2 # show_legend_cv()
+
+
 
 # fmt: off
 COLORS = {
@@ -104,6 +107,67 @@ def show_legend(semantic_in_use, long_edge_size=200, ncol=4):
         im = np.array(im)[..., :3]  # remove alpha channel
     plt.close("all")
     return im
+
+
+def show_legend_cv(semantic_in_use, long_edge_size=200, ncol=4):
+    """
+    Generate a legend image using OpenCV while maintaining the existing function structure.
+    """
+    # Font and size settings
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.5
+    font_thickness = 1
+    text_color = (0, 0, 0)  # Black text
+
+    # Calculate grid size
+    rows = -(-len(semantic_in_use) // ncol)  # Ceiling division
+    cell_width = long_edge_size // ncol
+    cell_height = int(cell_width * 0.5)  # Adjust cell height
+    legend_width = cell_width * ncol
+    legend_height = cell_height * rows
+
+    # Create a blank white image
+    legend_img = np.full((legend_height, legend_width, 3), 255, dtype=np.uint8)
+
+    # Draw each semantic's color box and label
+    for i, semantic in enumerate(semantic_in_use):
+        color = COLORS[semantic]
+        x = (i % ncol) * cell_width
+        y = (i // ncol) * cell_height
+
+        # Draw color box
+        cv2.rectangle(
+            legend_img,
+            (x, y),
+            (x + cell_height, y + cell_height),
+            color[::-1],  # OpenCV uses BGR instead of RGB
+            -1,  # Filled rectangle
+        )
+
+        # Draw text
+        cv2.putText(
+            legend_img,
+            semantic,
+            (x + cell_height + 5, y + cell_height - 5),  # Text position
+            font,
+            font_scale,
+            text_color,
+            font_thickness,
+            lineType=cv2.LINE_AA,
+        )
+
+    # Resize legend image to fit long edge size
+    scale_ratio = long_edge_size / max(legend_width, legend_height)
+    new_size = (int(legend_width * scale_ratio), int(legend_height * scale_ratio))
+    legend_img = cv2.resize(legend_img, new_size, interpolation=cv2.INTER_NEAREST)
+
+    # Convert OpenCV image to numpy array (removing alpha if necessary)
+    legend_img = legend_img[..., :3]
+
+    return legend_img
+
+
+
 
 
 def render_static(static_map, static_semantic, semantic_used):
@@ -203,6 +267,7 @@ def visualize_map(
     # add legend
     (h, w, _) = rendered.shape
     legend = show_legend(semantic_used, long_edge_size=target_size)
+    #legend = show_legend_cv(semantic_used, long_edge_size=target_size)
     (lh, lw, _) = legend.shape
     if lh > lw:
         final_render = np.pad(rendered, ((0, 0), (0, lw), (0, 0)))
@@ -212,3 +277,44 @@ def visualize_map(
         final_render[h:, :] = legend
 
     return final_render
+
+
+
+if __name__ == "__main__":
+    import numpy as np
+    import cv2
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    from PIL import Image
+
+
+    def show_legend_test():
+        semantic_in_use = {"car", "pedestrian", "bicycle", "drivable_area"}
+        long_edge_size = 400
+        ncol = 4
+
+        # Generate legends
+        legend_matplotlib = show_legend(semantic_in_use, long_edge_size, ncol)
+        legend_cv = show_legend_cv(semantic_in_use, long_edge_size, ncol)
+
+        # Resize images to the same shape for comparison
+        height = max(legend_matplotlib.shape[0], legend_cv.shape[0])
+        width = max(legend_matplotlib.shape[1], legend_cv.shape[1])
+
+        legend_matplotlib_resized = cv2.resize(legend_matplotlib, (width, height))
+        legend_cv_resized = cv2.resize(legend_cv, (width, height))
+
+        # Show both legends side-by-side
+        cv2.imshow("Matplotlib Legend", legend_matplotlib_resized[:, :, ::-1])  # Convert RGB to BGR
+        cv2.imshow("OpenCV Legend", legend_cv_resized[:, :, ::-1])  # Convert RGB to BGR
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        # Check similarity
+        diff = np.abs(
+            legend_matplotlib_resized.astype(np.int32) - legend_cv_resized.astype(np.int32)
+        )
+        print("Difference (sum of absolute differences):", diff.sum())
+
+    # Run the test
+    show_legend_test()
