@@ -5,6 +5,9 @@ from typing import List, Optional, Tuple
 import cv2
 import mmcv
 import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')  # 반드시 pyplot을 import하기 전에 설정
 from matplotlib import pyplot as plt
 
 from ..bbox import LiDARInstance3DBoxes

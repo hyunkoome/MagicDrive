@@ -1,5 +1,8 @@
 from typing import Tuple, Union
 import io
+import matplotlib
+# and set the backend to be Agg (no gui)
+matplotlib.use('Agg')
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from PIL import Image
