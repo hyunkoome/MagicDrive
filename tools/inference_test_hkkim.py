@@ -38,7 +38,7 @@ def output_func(x): return concat_6_views(x)
 # def output_func(x): return img_concat_h(*x[:3])
 
 
-@hydra.main(version_base=None, config_path="../configs", config_name="test_config")
+@hydra.main(version_base=None, config_path="../configs", config_name="inference_test_hkkim_config")
 def main(cfg: DictConfig):
     if cfg.debug:
         import debugpy

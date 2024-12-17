@@ -304,6 +304,7 @@ def run_one_batch(cfg, pipe, val_input, weight_dtype, global_generator=None,
     camera_param = val_input["camera_param"].to(weight_dtype)
 
     # 3-dim list: B, Times, views
+    print(val_input['captions'])
     gen_imgs_list = run_one_batch_pipe_func(
         cfg, pipe, val_input['pixel_values'], val_input['captions'],
         val_input['bev_map_with_aux'], camera_param, val_input['kwargs'],
