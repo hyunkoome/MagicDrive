@@ -1,0 +1,13 @@
+defaults:
+  - config
+  - _self_
+
+log_root_prefix: ./magicdrive-log/inference_test_demo
+
+runner:
+  validation_batch_size: 10
+
+resume_on_exists: false
+show_box: true
+
+fix_seed_for_every_generation: False

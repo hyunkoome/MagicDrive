@@ -19,6 +19,8 @@ This repository contains the implementation of the paper
 > <sup>1</sup>CUHK <sup>2</sup>HKUST <sup>3</sup>Huawei Noah's Ark Lab <br>
 > <sup>\*</sup>Equal Contribution <sup>^</sup>Corresponding Authors
 
+## Updated Dev Setting, Fixed Some Bugs by Hyunkoo Kim: [for CUDA 12.1 and Python 3.9](./Setting_Cuda12.1_Py3.9.md)
+
 ## Abstract
 
 <details>
